@@ -261,13 +261,13 @@ class MemBlocksDB:
         self._update_block_dicts()
         return self._latest_db_block_slot
 
-    def get_full_block_by_slot(self, block_slot: int) -> SolanaBlockInfo:
+    def get_full_block_by_slot(self, block_slot: int, gen_fake_if_not_found = True) -> SolanaBlockInfo:
         self._update_block_dicts()
         if block_slot > self._first_block.slot:
             return self._block_by_slot.get(block_slot, SolanaBlockInfo(slot=block_slot))
 
         block = self.db.get_full_block_by_slot(block_slot)
-        if block.is_empty():
+        if block.is_empty() and gen_fake_if_not_found:
             block = self.generate_fake_block(block.slot, self._latest_block.time)
         return block
 

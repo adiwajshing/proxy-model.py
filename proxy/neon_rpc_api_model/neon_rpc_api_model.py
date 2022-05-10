@@ -234,7 +234,7 @@ class NeonRpcApiModel:
 
     def _get_block_by_slot(self, block: SolanaBlockInfo, full: bool, skip_transaction: bool) -> Optional[dict]:
         if block.is_empty():
-            block = self._db.get_full_block_by_slot(block.slot)
+            block = self._db.get_full_block_by_slot(block.slot, False)
             if block.is_empty():
                 return None
 
