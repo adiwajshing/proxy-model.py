@@ -301,7 +301,7 @@ class MemBlocksDB:
 
     @staticmethod
     def generate_fake_block_by_hash(block_hash: str) -> SolanaBlockInfo:
-        slot_num = block_hash[-8:]
+        slot_num = block_hash[-7:]
         slot = int(slot_num, 16) # take last 8 chars to parse slot number
         return MemBlocksDB.generate_fake_block(slot)
 
