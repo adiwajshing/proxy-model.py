@@ -271,14 +271,13 @@ class MemBlocksDB:
             block = self.generate_fake_block(block.slot, self._latest_block.time)
         return block
 
-    def get_block_by_hash(self, block_hash: str, gen_fake_block_if_not_found = False) -> SolanaBlockInfo:
+    def get_block_by_hash(self, block_hash: str) -> SolanaBlockInfo:
         self._update_block_dicts()
         block = self._block_by_hash.get(block_hash)
-        if not block:
-            block = self.db.get_block_by_hash(block_hash)
-        if (not block or block.is_empty()) and gen_fake_block_if_not_found:
-            block = self.generate_fake_block_by_hash(block_hash)
-        return block
+        if block:
+            return block
+
+        return self.db.get_block_by_hash(block_hash)
 
     @staticmethod
     def generate_fake_block(block_slot: int, block_time=1) -> SolanaBlockInfo:
@@ -286,7 +285,7 @@ class MemBlocksDB:
             hex_num = hex(slot)[2:]
             num_len = len(hex_num)
             hex_num = '00' + hex_num.rjust(((num_len >> 1) + (num_len % 2)) << 1, '0')
-            return '0x' + hex_num.rjust(64, '0')
+            return '0x' + hex_num.rjust(64, 'f')
         hash = slot_hash(block_slot)
         # TODO: return predictable information about block time
         return SolanaBlockInfo(
@@ -298,12 +297,6 @@ class MemBlocksDB:
             parent_hash=slot_hash(block_slot - 1) if block_slot > 0 else hash,
             is_fake=True
         )
-
-    @staticmethod
-    def generate_fake_block_by_hash(block_hash: str) -> SolanaBlockInfo:
-        slot_num = block_hash[-8:]
-        slot = int(slot_num, 16) # take last 8 chars to parse slot number
-        return MemBlocksDB.generate_fake_block(slot)
 
     def submit_block(self, neon_res: NeonTxResultInfo) -> SolanaBlockInfo:
         self._try_to_fill_blocks_from_pending_list()

@@ -308,7 +308,7 @@ class NeonRpcApiModel:
         except (Exception,):
             raise InvalidParamError(message=f'bad block hash {block_hash}')
 
-        block = self._db.get_block_by_hash(block_hash, GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER)
+        block = self._db.get_block_by_hash(block_hash)
         if block.slot is None:
             self.debug("Not found block by hash %s", block_hash)
 
