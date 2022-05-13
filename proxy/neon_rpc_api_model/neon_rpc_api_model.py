@@ -279,6 +279,7 @@ class NeonRpcApiModel:
             "parentHash": block.parent_hash,
             "timestamp": hex(block.time),
             "transactions": sign_list,
+            "is_fake": block.is_fake
         }
         return result
 
