@@ -16,7 +16,7 @@ from ..common_neon.keys_storage import KeyStorage
 from ..common_neon.solana_interactor import SolanaInteractor
 from ..common_neon.utils import SolanaBlockInfo
 from ..common_neon.types import NeonTxPrecheckResult, NeonEmulatingResult
-from ..environment import SOLANA_URL, PP_SOLANA_URL, PYTH_MAPPING_ACCOUNT, NEON_EVM_VERSION, NEON_EVM_REVISION, \
+from ..environment import GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER, SOLANA_URL, PP_SOLANA_URL, PYTH_MAPPING_ACCOUNT, NEON_EVM_VERSION, NEON_EVM_REVISION, \
                           CHAIN_ID, USE_EARLIEST_BLOCK_IF_0_PASSED, neon_cli, EVM_STEP_COUNT
 from ..memdb.memdb import MemDB
 from ..common_neon.gas_price_calculator import GasPriceCalculator
@@ -234,7 +234,7 @@ class NeonRpcApiModel:
 
     def _get_block_by_slot(self, block: SolanaBlockInfo, full: bool, skip_transaction: bool) -> Optional[dict]:
         if block.is_empty():
-            block = self._db.get_full_block_by_slot(block.slot, False)
+            block = self._db.get_full_block_by_slot(block.slot, GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER)
             if block.is_empty():
                 return None
 
