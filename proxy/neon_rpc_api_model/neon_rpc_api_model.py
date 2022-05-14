@@ -7,6 +7,8 @@ import sha3
 from logged_groups import logged_group
 from web3.auto import w3
 
+from proxy.memdb.blocks_db import MemBlocksDB
+
 from ..common_neon.address import EthereumAddress
 from ..common_neon.emulator_interactor import call_emulated, call_trx_emulated
 from ..common_neon.errors import EthereumError, InvalidParamError, PendingTxError
@@ -240,19 +242,21 @@ class NeonRpcApiModel:
 
         sign_list = []
         gas_used = 0
-        if skip_transaction:
-            tx_list = []
-        else:
-            tx_list = self._db.get_tx_list_by_sol_sign(block.is_finalized, block.signs)
 
-        for tx in tx_list:
-            gas_used += int(tx.neon_res.gas_used, 16)
-
-            if full:
-                receipt = self._get_transaction(tx)
-                sign_list.append(receipt)
+        if not block.is_fake:
+            if skip_transaction:
+                tx_list = []
             else:
-                sign_list.append(tx.neon_tx.sign)
+                tx_list = self._db.get_tx_list_by_sol_sign(block.is_finalized, block.signs)
+
+            for tx in tx_list:
+                gas_used += int(tx.neon_res.gas_used, 16)
+
+                if full:
+                    receipt = self._get_transaction(tx)
+                    sign_list.append(receipt)
+                else:
+                    sign_list.append(tx.neon_tx.sign)
 
         result = {
             "difficulty": '0x20000',
@@ -309,7 +313,7 @@ class NeonRpcApiModel:
         except (Exception,):
             raise InvalidParamError(message=f'bad block hash {block_hash}')
 
-        block = self._db.get_block_by_hash(block_hash, GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER)
+        block = self._db.get_block_by_hash(block_hash)
         if block.slot is None:
             self.debug("Not found block by hash %s", block_hash)
 
@@ -321,8 +325,17 @@ class NeonRpcApiModel:
             full - If true it returns the full transaction objects, if false only the hashes of the transactions.
         """
         block = self._get_block_by_hash(block_hash)
+        if block.slot is None and GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER:
+            if block_hash.startswith('0xabcd'):
+                slot_num_str = block_hash[-7:] # take last 7 chars to parse slot number
+                block_slot = int(slot_num_str, 16)
+                block = self._db.get_full_block_by_slot(block_slot, True)
+                block.hash = block_hash
+                self.debug('made fake block using hash')
+
         if block.slot is None:
             return None
+
         ret = self._get_block_by_slot(block, full, False)
         return ret
 
