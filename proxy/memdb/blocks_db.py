@@ -286,6 +286,7 @@ class MemBlocksDB:
             num_len = len(hex_num)
             hex_num = '00' + hex_num.rjust(((num_len >> 1) + (num_len % 2)) << 1, '0')
             return '0xabcd' + hex_num.rjust(60, '0')
+            # return '0x' + hex_num.rjust(64, 'f')
         hash = slot_hash(block_slot)
         # TODO: return predictable information about block time
         return SolanaBlockInfo(
