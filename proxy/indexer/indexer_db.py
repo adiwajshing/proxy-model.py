@@ -70,7 +70,7 @@ class IndexerDB:
         if not net_block.hash:
             return block
 
-        self.debug(f'{net_block}')
+        self.debug(f'fetched block #{block.slot} from net')
         self._blocks_db.set_block(net_block)
         return net_block
 
@@ -83,6 +83,7 @@ class IndexerDB:
     def get_full_block_by_slot(self, slot) -> SolanaBlockInfo:
         block = self._blocks_db.get_full_block_by_slot(slot)
         if not block.parent_hash:
+            self.debug(f'fetching block for {slot} from net')
             block = self._get_block_from_net(block)
         return block
 
