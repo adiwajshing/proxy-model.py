@@ -55,11 +55,13 @@ class IndexerDB:
                     self.get_starting_block()
             neon_tx.tx_idx = self._tx_idx
             self._tx_idx += 1
-            self.debug(f'{neon_tx} {neon_res} {block}')
+            self.debug(f'submit transaction: {neon_tx} {neon_res} {block}')
             neon_res.fill_block_info(block)
             self._logs_db.push_logs(neon_res.logs, block)
             tx = NeonTxFullInfo(neon_tx=neon_tx, neon_res=neon_res, used_ixs=used_ixs)
             self._txs_db.set_tx(tx)
+
+            self.debug(f'submitted transaction: {neon_tx.sign}')
         except Exception as err:
             err_tb = "".join(traceback.format_tb(err.__traceback__))
             self.error('Exception on submitting transaction. ' +
