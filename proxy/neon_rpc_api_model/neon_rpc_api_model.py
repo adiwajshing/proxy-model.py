@@ -349,6 +349,7 @@ class NeonRpcApiModel:
             block_slot = int(slot_num_str, 16)
             block = self._db.get_full_block_by_slot(block_slot, True)
             block.hash = block_hash
+            block.parent_hash = block_hash
             block.time = 1
             self.debug('made fake block using hash - ' + str(block.slot))
 
