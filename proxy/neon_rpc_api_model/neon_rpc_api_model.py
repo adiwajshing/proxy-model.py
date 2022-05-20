@@ -1,6 +1,5 @@
 import json
 import multiprocessing
-from time import sleep
 import traceback
 
 import eth_utils
@@ -21,7 +20,7 @@ from ..common_neon.keys_storage import KeyStorage
 from ..common_neon.solana_interactor import SolanaInteractor
 from ..common_neon.utils import SolanaBlockInfo
 from ..common_neon.types import NeonTxPrecheckResult, NeonEmulatingResult
-from ..environment import GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER, ONLY_RETURN_FINALIZED_BLOCKS_FOR_FULL_TRANSACTION_FETCH, SOLANA_URL, PP_SOLANA_URL, PYTH_MAPPING_ACCOUNT, NEON_EVM_VERSION, NEON_EVM_REVISION, \
+from ..environment import GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER, SOLANA_URL, PP_SOLANA_URL, PYTH_MAPPING_ACCOUNT, NEON_EVM_VERSION, NEON_EVM_REVISION, \
                           CHAIN_ID, USE_EARLIEST_BLOCK_IF_0_PASSED, neon_cli, EVM_STEP_COUNT
 from ..memdb.memdb import MemDB
 from ..common_neon.gas_price_calculator import GasPriceCalculator
@@ -256,16 +255,11 @@ class NeonRpcApiModel:
         sign_list = []
         gas_used = 0
 
-        if not block.is_fake and not skip_transaction:
-            if full and ONLY_RETURN_FINALIZED_BLOCKS_FOR_FULL_TRANSACTION_FETCH:
-                while not block.is_finalized:
-                    self.debug(f'block {block.slot} not finalized, waiting for finalize...')
-                    sleep(0.75)
-                    block = self._db.get_full_block_by_slot(block.slot, False)
-                    if block.is_empty():
-                        return None
-
-            tx_list = self._db.get_tx_list_by_sol_sign(block.is_finalized, block.signs)
+        if not block.is_fake:
+            if skip_transaction:
+                tx_list = []
+            else:
+                tx_list = self._db.get_tx_list_by_sol_sign(block.is_finalized, block.signs)
 
             for tx in tx_list:
                 gas_used += int(tx.neon_res.gas_used, 16)
