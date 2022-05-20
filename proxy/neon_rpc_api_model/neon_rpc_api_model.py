@@ -19,7 +19,7 @@ from ..common_neon.keys_storage import KeyStorage
 from ..common_neon.solana_interactor import SolanaInteractor
 from ..common_neon.utils import SolanaBlockInfo
 from ..common_neon.types import NeonTxPrecheckResult
-from ..environment import GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER, KEEP_POLLING_TXS_IF_NOT_FOUND, SOLANA_URL, PP_SOLANA_URL, PYTH_MAPPING_ACCOUNT, NEON_EVM_VERSION, NEON_EVM_REVISION, \
+from ..environment import GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER, SECONDS_TO_KEEP_POLLING_TXS_IF_NOT_FOUND, SOLANA_URL, PP_SOLANA_URL, PYTH_MAPPING_ACCOUNT, NEON_EVM_VERSION, NEON_EVM_REVISION, \
                           CHAIN_ID, USE_EARLIEST_BLOCK_IF_0_PASSED, neon_cli, EVM_STEP_COUNT
 from ..memdb.memdb import MemDB
 from ..common_neon.gas_price_calculator import GasPriceCalculator
@@ -256,16 +256,16 @@ class NeonRpcApiModel:
 
         if not block.is_fake and not skip_transaction:
             tx_list = self._db.get_tx_list_by_sol_sign(block.is_finalized, block.signs)
-            if full and len(block.signs) > 0:
+            if full and len(block.signs) > 0 and SECONDS_TO_KEEP_POLLING_TXS_IF_NOT_FOUND > 0:
                 start_time = time()
-                while len(tx_list) == 0 and KEEP_POLLING_TXS_IF_NOT_FOUND:
-                    if (time() - start_time) >= 30:
+                while len(tx_list) == 0:
+                    if (time() - start_time) >= SECONDS_TO_KEEP_POLLING_TXS_IF_NOT_FOUND:
                         self.debug(f'timed out waiting for block {block.slot} to finalize')
                         break
 
                     self.debug(f'no txs in {block.slot}, waiting for them...')
-                    sleep(0.75)
-                    tx_list = self._db.get_tx_list_by_sol_sign(block.is_finalized, block.signs)
+                    sleep(1)
+                    tx_list = self._db.get_tx_list_by_sol_sign(True, block.signs)
 
             for tx in tx_list:
                 gas_used += int(tx.neon_res.gas_used, 16)
