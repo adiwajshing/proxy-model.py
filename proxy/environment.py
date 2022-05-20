@@ -23,6 +23,8 @@ if MINIMAL_GAS_PRICE is not None:
 
 EXTRA_GAS = int(os.environ.get("EXTRA_GAS", "0"))
 LOG_NEON_CLI_DEBUG = os.environ.get("LOG_NEON_CLI_DEBUG", "NO") == "YES"
+# wait for Xs for the NEON indexer to index a block's transactions
+BLOCK_INDEX_WAIT_TIME_S = int(os.environ.get("BLOCK_INDEX_WAIT_TIME_S", "20"))
 # uses the "earliest" tag if "0x0" or "0" is passed to the "eth_getBlockByNumber" RPC
 USE_EARLIEST_BLOCK_IF_0_PASSED = os.environ.get("USE_EARLIEST_BLOCK_IF_0_PASSED", "NO") == "YES"
 # fetches a block from Solana net if it wasn't found in the DB
