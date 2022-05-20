@@ -256,7 +256,7 @@ class NeonRpcApiModel:
         sign_list = []
         gas_used = 0
 
-        if not block.is_fake and not skip_transaction and block.is_finalized:
+        if not block.is_fake and not skip_transaction:
             cur_time = time()
             if cur_time-block.time < BLOCK_INDEX_WAIT_TIME_S and BLOCK_INDEX_WAIT_TIME_S > 0:
                 secs = block.time + BLOCK_INDEX_WAIT_TIME_S - cur_time
