@@ -111,8 +111,6 @@ class NeonTxsDB(BaseDB):
             cursor.execute(request)
             result = cursor.fetchone()
 
-        self.debug(f'result: {result[0]}')
-
         return result[0]
 
     def get_tx_list_by_sol_sign(self, sol_sign_list: [str]) -> [NeonTxFullInfo]:
