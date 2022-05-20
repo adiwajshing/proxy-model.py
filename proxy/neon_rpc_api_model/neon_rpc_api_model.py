@@ -262,7 +262,11 @@ class NeonRpcApiModel:
         sign_list = []
         gas_used = 0
 
+        parent_hash = block.parent_hash
+
         if not block.is_fake:
+            parent_hash = self._db._db.get_block_parent_hash(block.slot)
+
             if skip_transaction:
                 tx_list = []
             else:
@@ -299,7 +303,7 @@ class NeonRpcApiModel:
             "gasUsed": hex(gas_used),
             "hash": block.hash,
             "number": hex(block.slot),
-            "parentHash": block.parent_hash,
+            "parentHash": parent_hash,
             "timestamp": hex(block.time),
             "transactions": sign_list,
             "is_fake": block.is_fake
