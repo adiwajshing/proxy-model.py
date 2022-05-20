@@ -281,7 +281,7 @@ class ReceiptsParserState:
         for tx in self._done_tx_list:
             if tx.status != NeonTxIndexingStatus.DONE:
                 continue
-            self.debug(f'{tx}')
+            self.debug(f'done tx {tx}')
             self.unmark_ix_used(tx)
             if tx.neon_tx.is_valid() and tx.neon_res.is_valid():
                 with logging_context(neon_tx=tx.neon_tx.sign[:7]):

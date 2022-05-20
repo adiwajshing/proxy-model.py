@@ -214,7 +214,7 @@ class IndexerBase:
                 if msg["accountKeys"][instruction["programIdIndex"]] == EVM_LOADER_ID:
                     add = True
             if add:
-                self.debug(f'{(slot, tx_idx, sol_sign)}')
+                self.debug(f'adding transaction: {(slot, tx_idx, sol_sign)}')
                 self.transaction_receipts.add_tx(slot, tx_idx, sol_sign, tx)
         else:
             self.debug(f"trx is None {sol_sign}")
