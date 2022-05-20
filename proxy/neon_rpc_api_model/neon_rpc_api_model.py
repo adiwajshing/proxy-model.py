@@ -1,6 +1,6 @@
 import json
 import multiprocessing
-from time import sleep, time
+from time import sleep
 import traceback
 
 import eth_utils
@@ -10,6 +10,8 @@ import sha3
 from logged_groups import logged_group
 from web3.auto import w3
 
+from proxy.memdb.blocks_db import MemBlocksDB
+
 from ..common_neon.address import EthereumAddress
 from ..common_neon.emulator_interactor import call_emulated, call_trx_emulated
 from ..common_neon.errors import EthereumError, InvalidParamError, PendingTxError
@@ -18,8 +20,8 @@ from ..common_neon.eth_proto import Trx as EthTrx
 from ..common_neon.keys_storage import KeyStorage
 from ..common_neon.solana_interactor import SolanaInteractor
 from ..common_neon.utils import SolanaBlockInfo
-from ..common_neon.types import NeonTxPrecheckResult
-from ..environment import GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER, KEEP_POLLING_TXS_IF_NOT_FOUND, SOLANA_URL, PP_SOLANA_URL, PYTH_MAPPING_ACCOUNT, NEON_EVM_VERSION, NEON_EVM_REVISION, \
+from ..common_neon.types import NeonTxPrecheckResult, NeonEmulatingResult
+from ..environment import GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER, ONLY_RETURN_FINALIZED_BLOCKS_FOR_FULL_TRANSACTION_FETCH, SOLANA_URL, PP_SOLANA_URL, PYTH_MAPPING_ACCOUNT, NEON_EVM_VERSION, NEON_EVM_REVISION, \
                           CHAIN_ID, USE_EARLIEST_BLOCK_IF_0_PASSED, neon_cli, EVM_STEP_COUNT
 from ..memdb.memdb import MemDB
 from ..common_neon.gas_price_calculator import GasPriceCalculator
@@ -255,17 +257,15 @@ class NeonRpcApiModel:
         gas_used = 0
 
         if not block.is_fake and not skip_transaction:
-            tx_list = self._db.get_tx_list_by_sol_sign(block.is_finalized, block.signs)
-            if full and len(block.signs) > 0:
-                start_time = time()
-                while len(tx_list) == 0 and KEEP_POLLING_TXS_IF_NOT_FOUND:
-                    if (time() - start_time) >= 30:
-                        self.debug(f'timed out waiting for block {block.slot} to finalize')
-                        break
-
-                    self.debug(f'no txs in {block.slot}, waiting for them...')
+            if full and ONLY_RETURN_FINALIZED_BLOCKS_FOR_FULL_TRANSACTION_FETCH:
+                while not block.is_finalized:
+                    self.debug(f'block {block.slot} not finalized, waiting for finalize...')
                     sleep(0.75)
-                    tx_list = self._db.get_tx_list_by_sol_sign(block.is_finalized, block.signs)
+                    block = self._db.get_full_block_by_slot(block.slot, False)
+                    if block.is_empty():
+                        return None
+
+            tx_list = self._db.get_tx_list_by_sol_sign(block.is_finalized, block.signs)
 
             for tx in tx_list:
                 gas_used += int(tx.neon_res.gas_used, 16)
