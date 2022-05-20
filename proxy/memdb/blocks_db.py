@@ -250,6 +250,9 @@ class MemBlocksDB:
         self._update_block_dicts()
         return self._latest_block
 
+    def get_latest_slot_with_transaction(self) -> SolanaBlockInfo:
+        return self.db.get_latest_slot_with_transaction()
+
     def get_latest_block_slot(self) -> int:
         self._update_block_dicts()
         return self._latest_block.slot

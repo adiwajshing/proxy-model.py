@@ -95,6 +95,9 @@ class IndexerDB:
             SolanaBlockInfo(slot=0)
         return self.get_block_by_slot(slot)
 
+    def get_latest_slot_with_transaction(self) -> SolanaBlockInfo:
+        return self._txs_db.get_latest_tx_slot()
+
     def get_latest_block_slot(self) -> int:
         return self._constants['latest_slot']
 

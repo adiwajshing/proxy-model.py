@@ -105,6 +105,16 @@ class NeonTxsDB(BaseDB):
             ))
         )
 
+    def get_latest_tx_slot(self) -> int:
+        request = f'SELECT MAX(slot) FROM {self._table_name} LIMIT 1'
+        with self._conn.cursor() as cursor:
+            cursor.execute(request)
+            result = cursor.fetchone()
+
+        self.debug(f'result: {result[0]}')
+
+        return result[0]
+
     def get_tx_list_by_sol_sign(self, sol_sign_list: [str]) -> [NeonTxFullInfo]:
         e = self._build_expression(DBQuery(
             column_list=self._column_lst,

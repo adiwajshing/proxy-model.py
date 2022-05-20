@@ -20,7 +20,7 @@ from ..common_neon.keys_storage import KeyStorage
 from ..common_neon.solana_interactor import SolanaInteractor
 from ..common_neon.utils import SolanaBlockInfo
 from ..common_neon.types import NeonTxPrecheckResult, NeonEmulatingResult
-from ..environment import GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER, SOLANA_URL, PP_SOLANA_URL, PYTH_MAPPING_ACCOUNT, NEON_EVM_VERSION, NEON_EVM_REVISION, \
+from ..environment import GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER, ONLY_TRACK_BLOCKS_WITH_NEON_TRANSACTION, SOLANA_URL, PP_SOLANA_URL, PYTH_MAPPING_ACCOUNT, NEON_EVM_VERSION, NEON_EVM_REVISION, \
                           CHAIN_ID, USE_EARLIEST_BLOCK_IF_0_PASSED, neon_cli, EVM_STEP_COUNT
 from ..memdb.memdb import MemDB
 from ..common_neon.gas_price_calculator import GasPriceCalculator
@@ -122,7 +122,11 @@ class NeonRpcApiModel:
             or ((tag == '0x0' or str(tag) == '0') and USE_EARLIEST_BLOCK_IF_0_PASSED)
     def _process_block_tag(self, tag) -> SolanaBlockInfo:
         if tag in ("latest", "pending"):
-            block = self._db.get_latest_block()
+            if ONLY_TRACK_BLOCKS_WITH_NEON_TRANSACTION:
+                block_slot = self._db.get_latest_slot_with_transaction()
+                block = SolanaBlockInfo(slot=block_slot)
+            else:
+                block = self._db.get_latest_block()
         elif self._should_return_starting_block(tag):
             block = self._db.get_starting_block()
         elif isinstance(tag, str):
@@ -198,7 +202,10 @@ class NeonRpcApiModel:
         return block
 
     def eth_blockNumber(self):
-        slot = self._db.get_latest_block_slot()
+        if ONLY_TRACK_BLOCKS_WITH_NEON_TRANSACTION:
+            slot = self._db.get_latest_slot_with_transaction()
+        else:
+            slot = self._db.get_latest_block_slot()
         return hex(slot)
 
     def eth_getBalance(self, account: str, tag: str) -> str:

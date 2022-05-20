@@ -27,6 +27,9 @@ class MemDB:
     def get_latest_block(self) -> SolanaBlockInfo:
         return self._blocks_db.get_latest_block()
 
+    def get_latest_slot_with_transaction(self) -> int:
+        return self._blocks_db.get_latest_slot_with_transaction()
+
     def get_latest_block_slot(self) -> int:
         return self._blocks_db.get_latest_block_slot()
 
