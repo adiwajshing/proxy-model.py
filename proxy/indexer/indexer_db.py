@@ -5,7 +5,7 @@ from typing import Optional, List
 
 from ..common_neon.utils import NeonTxInfo, NeonTxResultInfo, NeonTxFullInfo
 
-from ..environment import FINALIZED
+from ..environment import FETCH_BLOCK_FROM_NET_IF_NOT_FOUND, FINALIZED
 from ..indexer.utils import SolanaIxSignInfo, CostInfo
 from ..indexer.accounts_db import NeonAccountDB, NeonAccountInfo
 from ..indexer.costs_db import CostsDB
@@ -84,7 +84,7 @@ class IndexerDB:
 
     def get_full_block_by_slot(self, slot) -> SolanaBlockInfo:
         block = self._blocks_db.get_full_block_by_slot(slot)
-        if not block.parent_hash:
+        if not block.parent_hash and FETCH_BLOCK_FROM_NET_IF_NOT_FOUND:
             self.debug(f'fetching block for {slot} from net')
             block = self._get_block_from_net(block)
         return block

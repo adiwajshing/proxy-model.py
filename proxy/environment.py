@@ -25,6 +25,8 @@ EXTRA_GAS = int(os.environ.get("EXTRA_GAS", "0"))
 LOG_NEON_CLI_DEBUG = os.environ.get("LOG_NEON_CLI_DEBUG", "NO") == "YES"
 # uses the "earliest" tag if "0x0" or "0" is passed to the "eth_getBlockByNumber" RPC
 USE_EARLIEST_BLOCK_IF_0_PASSED = os.environ.get("USE_EARLIEST_BLOCK_IF_0_PASSED", "NO") == "YES"
+# fetches a block from Solana net if it wasn't found in the DB
+FETCH_BLOCK_FROM_NET_IF_NOT_FOUND = os.environ.get("FETCH_BLOCK_FROM_NET_IF_NOT_FOUND", "YES") == "YES"
 GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER = os.environ.get("GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER", "YES") == "YES"
 RETRY_ON_FAIL = int(os.environ.get("RETRY_ON_FAIL", "10"))
 RETRY_ON_FAIL_ON_GETTING_CONFIRMED_TRANSACTION = max(int(os.environ.get("RETRY_ON_FAIL_ON_GETTING_CONFIRMED_TRANSACTION", "1000")), 1)
