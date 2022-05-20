@@ -345,12 +345,11 @@ class NeonRpcApiModel:
         """
         block = self._get_block_by_hash(block_hash)
         if block.slot is None and GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER:
-            if block_hash.startswith('0xabcd'):
-                slot_num_str = block_hash[-7:] # take last 7 chars to parse slot number
-                block_slot = int(slot_num_str, 16)
-                block = self._db.get_full_block_by_slot(block_slot, True)
-                block.hash = block_hash
-                self.debug('made fake block using hash' + ' - ' + str(block.slot))
+            slot_num_str = block_hash[-7:] # take last 7 chars to parse slot number
+            block_slot = int(slot_num_str, 16)
+            block = self._db.get_full_block_by_slot(block_slot, True)
+            block.hash = block_hash
+            self.debug('made fake block using hash' + ' - ' + str(block.slot))
 
         if block.slot is None:
             return None
