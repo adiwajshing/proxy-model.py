@@ -1,6 +1,5 @@
 import json
 import multiprocessing
-from time import sleep, time
 import traceback
 
 import eth_utils
@@ -21,7 +20,7 @@ from ..common_neon.keys_storage import KeyStorage
 from ..common_neon.solana_interactor import SolanaInteractor
 from ..common_neon.utils import SolanaBlockInfo
 from ..common_neon.types import NeonTxPrecheckResult, NeonEmulatingResult
-from ..environment import BLOCK_INDEX_WAIT_TIME_S, GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER, SOLANA_URL, PP_SOLANA_URL, PYTH_MAPPING_ACCOUNT, NEON_EVM_VERSION, NEON_EVM_REVISION, \
+from ..environment import GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER, SOLANA_URL, PP_SOLANA_URL, PYTH_MAPPING_ACCOUNT, NEON_EVM_VERSION, NEON_EVM_REVISION, \
                           CHAIN_ID, USE_EARLIEST_BLOCK_IF_0_PASSED, neon_cli, EVM_STEP_COUNT
 from ..memdb.memdb import MemDB
 from ..common_neon.gas_price_calculator import GasPriceCalculator
@@ -256,14 +255,11 @@ class NeonRpcApiModel:
         sign_list = []
         gas_used = 0
 
-        if not block.is_fake and not skip_transaction:
-            cur_time = time()
-            if cur_time-block.time < BLOCK_INDEX_WAIT_TIME_S and BLOCK_INDEX_WAIT_TIME_S > 0:
-                secs = block.time + BLOCK_INDEX_WAIT_TIME_S - cur_time
-                self.debug(f'{block.slot} is a recent block, sleeping for {secs}s')
-                sleep(secs)
-
-            tx_list = self._db.get_tx_list_by_sol_sign(block.is_finalized, block.signs)
+        if not block.is_fake:
+            if skip_transaction:
+                tx_list = []
+            else:
+                tx_list = self._db.get_tx_list_by_sol_sign(block.is_finalized, block.signs)
 
             for tx in tx_list:
                 gas_used += int(tx.neon_res.gas_used, 16)
@@ -299,8 +295,7 @@ class NeonRpcApiModel:
             "parentHash": block.parent_hash,
             "timestamp": hex(block.time),
             "transactions": sign_list,
-            "is_fake": block.is_fake,
-            "is_final": block.is_finalized
+            "is_fake": block.is_fake
         }
         return result
 
