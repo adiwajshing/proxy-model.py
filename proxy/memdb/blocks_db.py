@@ -276,8 +276,9 @@ class MemBlocksDB:
             block = self.generate_fake_block(block.slot, self._latest_block.time)
         return block
 
-    def get_block_by_hash(self, block_hash: str) -> SolanaBlockInfo:
-        self._update_block_dicts()
+    def get_block_by_hash(self, block_hash: str, update_dicts = True) -> SolanaBlockInfo:
+        if update_dicts:
+            self._update_block_dicts()
         block = self._block_by_hash.get(block_hash)
         if not block:
             block = self.db.get_block_by_hash(block_hash)

@@ -42,8 +42,8 @@ class MemDB:
     def get_full_block_by_slot(self, block_slot: int, gen_fake_if_not_found = True) -> SolanaBlockInfo:
         return self._blocks_db.get_full_block_by_slot(block_slot, gen_fake_if_not_found, False)
 
-    def get_block_by_hash(self, block_hash: str) -> SolanaBlockInfo:
-        return self._blocks_db.get_block_by_hash(block_hash)
+    def get_block_by_hash(self, block_hash: str, update_dicts = True) -> SolanaBlockInfo:
+        return self._blocks_db.get_block_by_hash(block_hash, update_dicts)
 
     def pend_transaction(self, tx: NeonPendingTxInfo):
         self._pending_tx_db.pend_transaction(tx, self._before_slot())
@@ -56,7 +56,8 @@ class MemDB:
     def get_tx_list_by_sol_sign(self, is_finalized: bool, sol_sign_list: [str]) -> [NeonTxFullInfo]:
         if (not sol_sign_list) or (not len(sol_sign_list)):
             return []
-        return self._txs_db.get_tx_list_by_sol_sign(is_finalized, sol_sign_list, self._before_slot())
+        before_slot = 0 if is_finalized else self._before_slot()
+        return self._txs_db.get_tx_list_by_sol_sign(is_finalized, sol_sign_list, before_slot)
 
     def get_tx_by_neon_sign(self, neon_sign: str) -> Optional[NeonTxFullInfo]:
         before_slot = self._before_slot()

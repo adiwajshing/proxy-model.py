@@ -331,7 +331,7 @@ class NeonRpcApiModel:
         except (Exception,):
             raise InvalidParamError(message=f'bad block hash {block_hash}')
 
-        block = self._db.get_block_by_hash(block_hash)
+        block = self._db.get_block_by_hash(block_hash, False)
         if block.slot is None:
             self.debug("Not found block by hash %s", block_hash)
 
@@ -347,7 +347,13 @@ class NeonRpcApiModel:
             if block_hash.startswith('0xabcd'):
                 slot_num_str = block_hash[-7:] # take last 7 chars to parse slot number
                 block_slot = int(slot_num_str, 16)
-                block = self._db.get_full_block_by_slot(block_slot, True)
+                block = SolanaBlockInfo(
+                    slot=block_slot,
+                    time=1,
+                    hash=block_hash,
+                    parent_hash=block_hash,
+                    is_fake=True
+                )
                 block.hash = block_hash
                 self.debug('made fake block using hash' + ' - ' + str(block.slot))
 
