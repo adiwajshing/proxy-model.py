@@ -270,7 +270,7 @@ class NeonRpcApiModel:
             if skip_transaction:
                 tx_list = []
             else:
-                tx_list = self._db.get_tx_list_by_sol_sign(block.is_finalized, block.signs)
+                tx_list = self._db.get_tx_list_by_sol_sign(True, block.signs)
 
             for tx in tx_list:
                 gas_used += int(tx.neon_res.gas_used, 16)
