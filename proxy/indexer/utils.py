@@ -15,6 +15,11 @@ def check_error(trx):
         return True
     return False
 
+def gen_fake_slot_hash(slot: int):
+    hex_num = hex(slot)[2:]
+    num_len = len(hex_num)
+    hex_num = '00' + hex_num.rjust(((num_len >> 1) + (num_len % 2)) << 1, '0')
+    return '0xabcd' + hex_num.rjust(60, '0')
 
 class SolanaIxSignInfo:
     def __init__(self, sign: str, slot: int, idx: int):

@@ -45,13 +45,14 @@ class SolanaBlocksDB(BaseDB):
         q = DBQuery(column_list=self._column_lst, key_list=[('hash', block_hash)], order_list=[])
         return self._block_from_value(None, self._fetchone(q))
     # given a block's slot number, returns the hash of the previous NEON block
-    def get_block_parent_hash(self, slot: int) -> str:
-        request = f'SELECT hash FROM {self._table_name} WHERE slot < {slot} ORDER BY slot DESC LIMIT 1'
+    def get_block_parent_hash(self, slot: int, immediate) -> str:
+        q = f'slot = {slot}-1' if immediate else f'slot < {slot}'
+        request = f'SELECT hash FROM {self._table_name} WHERE {q} ORDER BY slot DESC LIMIT 1'
         with self._conn.cursor() as cursor:
             cursor.execute(request)
             result = cursor.fetchone()
-
-        return result[0]
+        if result:
+            return result[0]
 
     def set_block(self, block: SolanaBlockInfo):
         with self._conn.cursor() as cursor:

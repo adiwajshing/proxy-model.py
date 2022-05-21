@@ -8,6 +8,7 @@ from typing import Optional, Union
 import sha3
 from logged_groups import logged_group
 from web3.auto import w3
+from proxy.indexer.utils import gen_fake_slot_hash
 
 from proxy.memdb.blocks_db import MemBlocksDB
 
@@ -262,7 +263,12 @@ class NeonRpcApiModel:
         sign_list = []
         gas_used = 0
 
-        parent_hash = self._db._db.get_block_parent_hash(block.slot)
+        if block.is_fake:
+            parent_hash = self._db._db.get_block_parent_hash(block.slot, True)
+            if not parent_hash:
+                parent_hash = block.parent_hash
+        else:
+            parent_hash = self._db._db.get_block_parent_hash(block.slot, False)
 
         if not block.is_fake and not skip_transaction:
             tx_list = self._db.get_tx_list_by_sol_sign(True, block.signs)
@@ -351,7 +357,7 @@ class NeonRpcApiModel:
                     slot=block_slot,
                     time=1,
                     hash=block_hash,
-                    parent_hash=block_hash,
+                    parent_hash=gen_fake_slot_hash(block_slot-1),
                     is_fake=True
                 )
                 block.hash = block_hash

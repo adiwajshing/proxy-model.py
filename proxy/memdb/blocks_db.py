@@ -10,6 +10,8 @@ import os
 
 from logged_groups import logged_group
 
+from proxy.indexer.utils import gen_fake_slot_hash
+
 from ..common_neon.utils import SolanaBlockInfo, NeonTxResultInfo
 from ..common_neon.solana_interactor import SolanaInteractor
 from ..indexer.indexer_db import IndexerDB
@@ -286,13 +288,7 @@ class MemBlocksDB:
 
     @staticmethod
     def generate_fake_block(block_slot: int, block_time=1) -> SolanaBlockInfo:
-        def slot_hash(slot: int):
-            hex_num = hex(slot)[2:]
-            num_len = len(hex_num)
-            hex_num = '00' + hex_num.rjust(((num_len >> 1) + (num_len % 2)) << 1, '0')
-            return '0xabcd' + hex_num.rjust(60, '0')
-            # return '0x' + hex_num.rjust(64, 'f')
-        hash = slot_hash(block_slot)
+        hash = gen_fake_slot_hash(block_slot)
         # TODO: return predictable information about block time
         return SolanaBlockInfo(
             slot=block_slot,
@@ -300,7 +296,7 @@ class MemBlocksDB:
             hash=hash,
             # return the prev block's computed hash if the block is not the first block
             # if the block is the first block (0x0) -- then just return the hash of this block itself
-            parent_hash=slot_hash(block_slot - 1) if block_slot > 0 else hash,
+            parent_hash=gen_fake_slot_hash(block_slot - 1) if block_slot > 0 else hash,
             is_fake=True
         )
 

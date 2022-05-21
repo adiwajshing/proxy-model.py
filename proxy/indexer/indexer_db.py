@@ -150,5 +150,5 @@ class IndexerDB:
     def get_sol_sign_list_by_neon_sign(self, neon_sign: str) -> [str]:
         return self._txs_db.get_sol_sign_list_by_neon_sign(neon_sign)
 
-    def get_block_parent_hash(self, slot: int) -> str:
-        return self._blocks_db.get_block_parent_hash(slot)
+    def get_block_parent_hash(self, slot: int, immediate: bool) -> str:
+        return self._blocks_db.get_block_parent_hash(slot, immediate)
