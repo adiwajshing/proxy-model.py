@@ -267,10 +267,8 @@ class NeonRpcApiModel:
         if not block.is_fake:
             parent_hash = self._db._db.get_block_parent_hash(block.slot)
 
-            if skip_transaction:
-                tx_list = []
-            else:
-                tx_list = self._db.get_tx_list_by_sol_sign(True, block.signs)
+        if not block.is_fake and not skip_transaction:
+            tx_list = self._db.get_tx_list_by_sol_sign(True, block.signs)
 
             for tx in tx_list:
                 gas_used += int(tx.neon_res.gas_used, 16)

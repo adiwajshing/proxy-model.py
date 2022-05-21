@@ -40,7 +40,7 @@ class MemDB:
         return self._db.get_starting_block()
 
     def get_full_block_by_slot(self, block_slot: int, gen_fake_if_not_found = True) -> SolanaBlockInfo:
-        return self._blocks_db.get_full_block_by_slot(block_slot, gen_fake_if_not_found)
+        return self._blocks_db.get_full_block_by_slot(block_slot, gen_fake_if_not_found, False)
 
     def get_block_by_hash(self, block_hash: str) -> SolanaBlockInfo:
         return self._blocks_db.get_block_by_hash(block_hash)
