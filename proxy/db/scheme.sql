@@ -111,7 +111,7 @@
         UNIQUE(neon_sign),
         UNIQUE(sol_sign, idx)
     );
-
+    CREATE INDEX IF NOT EXISTS neon_transaction_slot_idx ON neon_transactions(slot DESC);
     ALTER TABLE neon_transactions ADD COLUMN IF NOT EXISTS tx_idx INT DEFAULT 0;
 
     CREATE TABLE IF NOT EXISTS solana_neon_transactions_costs (
