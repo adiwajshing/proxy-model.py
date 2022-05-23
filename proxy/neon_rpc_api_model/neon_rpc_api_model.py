@@ -378,7 +378,7 @@ class NeonRpcApiModel:
         if block.slot is None:
             self.debug(f"Not found block by number {tag}")
             return None
-        ret = self._get_block_by_slot(block, full, tag in ('latest', 'pending'))
+        ret = self._get_block_by_slot(block, full, False)
         return ret
 
     def eth_call(self, obj: dict, tag: str) -> str:
