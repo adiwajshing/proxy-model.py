@@ -1,6 +1,8 @@
 from logged_groups import logged_group
 from typing import Optional
 
+from proxy.environment import FINALIZED, ONLY_TRACK_BLOCKS_WITH_NEON_TRANSACTION
+
 from ..indexer.indexer_db import IndexerDB
 
 from ..common_neon.utils import NeonTxInfo, NeonTxResultInfo, NeonTxFullInfo
@@ -60,8 +62,13 @@ class MemDB:
         return self._txs_db.get_tx_list_by_sol_sign(is_finalized, sol_sign_list, before_slot)
 
     def get_tx_by_neon_sign(self, neon_sign: str) -> Optional[NeonTxFullInfo]:
-        before_slot = self._before_slot()
-        is_pended_tx = self._pending_tx_db.is_exist(neon_sign, before_slot)
+        is_using_finalized = ONLY_TRACK_BLOCKS_WITH_NEON_TRANSACTION and FINALIZED == 'finalized'
+        if is_using_finalized:
+            before_slot = 0
+            is_pended_tx = False
+        else:
+            before_slot = self._before_slot()
+            is_pended_tx = self._pending_tx_db.is_exist(neon_sign, before_slot)
         return self._txs_db.get_tx_by_neon_sign(neon_sign, is_pended_tx, before_slot)
 
     def get_logs(self, from_block, to_block, addresses, topics, block_hash):
