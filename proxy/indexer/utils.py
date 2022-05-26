@@ -16,6 +16,8 @@ def check_error(trx):
     return False
 
 def gen_fake_slot_hash(slot: int):
+    if slot < 0:
+        slot = 0
     hex_num = hex(slot)[2:]
     num_len = len(hex_num)
     hex_num = '00' + hex_num.rjust(((num_len >> 1) + (num_len % 2)) << 1, '0')
