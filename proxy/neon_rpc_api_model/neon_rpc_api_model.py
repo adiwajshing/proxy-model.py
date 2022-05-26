@@ -263,12 +263,9 @@ class NeonRpcApiModel:
         sign_list = []
         gas_used = 0
 
-        if block.is_fake:
-            parent_hash = self._db._db.get_block_parent_hash(block.slot, True)
-            if not parent_hash:
-                parent_hash = block.parent_hash
-        else:
-            parent_hash = self._db._db.get_block_parent_hash(block.slot, False)
+        parent_hash = self._db._db.get_block_parent_hash(block.slot, True)
+        if not parent_hash:
+            parent_hash = gen_fake_slot_hash(block.slot-1)
 
         if not block.is_fake and not skip_transaction:
             tx_list = self._db.get_tx_list_by_sol_sign(True, block.signs)
