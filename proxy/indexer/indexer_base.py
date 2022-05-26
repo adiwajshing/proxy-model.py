@@ -93,7 +93,7 @@ class IndexerBase:
 
     def get_tx_receipts(self, stop_slot=None):
         signatures = self.gather_unknown_transactions()
-        self.debug(f'{len(signatures)}')
+        self.debug(f'got {len(signatures)} signatures')
 
         poll_txs = []
         tx_list = []
