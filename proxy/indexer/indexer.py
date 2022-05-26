@@ -285,7 +285,6 @@ class ReceiptsParserState:
                 done_holder_list.append(holder)
 
         for holder in done_holder_list:
-            self.debug(f'{holder}')
             self.unmark_ix_used(holder)
             self.del_holder(holder)
 
@@ -404,7 +403,7 @@ class DummyIxDecoder:
         - log the start of decoding.
         """
         self.ix = self.state.ix
-        self.debug(f'{self} ...')
+        self.debug(f'decoding start {self} ...')
 
     def _decoding_success(self, obj: BaseEvmObject, msg: str) -> bool:
         """
@@ -413,7 +412,7 @@ class DummyIxDecoder:
         - log the success message.
         """
         self.state.mark_ix_used(obj)
-        self.debug(f'{msg} - {obj}')
+        self.debug(f'decoding success {msg} - {obj}')
         return True
 
     def _decoding_done(self, obj: BaseEvmObject, msg: str) -> bool:
@@ -428,12 +427,12 @@ class DummyIxDecoder:
             self.state.del_holder(obj)
         else:
             assert False, 'Unknown type of object'
-        self.debug(f'{msg} - {obj}')
+        self.debug(f'decoding done {msg} - {obj}')
         return True
 
     def _decoding_skip(self, reason: str) -> bool:
         """Skip decoding of the instruction"""
-        self.debug(f'{reason}')
+        self.debug(f'decoding skipped: {reason}')
         return False
 
     def _decoding_fail(self, obj: BaseEvmObject, reason: str) -> bool:
@@ -591,7 +590,6 @@ class CreateAccountIxDecoder(DummyIxDecoder):
 
         account_info = NeonAccountInfo(neon_account, pda_account, code_account,
                                        self.ix.sign.slot, None, self.ix.sign.sign)
-        self.debug(f"{account_info}")
         self.state.add_account_to_db(account_info)
         return True
 
@@ -617,7 +615,6 @@ class CreateAccount2IxDecoder(DummyIxDecoder):
 
         account_info = NeonAccountInfo(neon_account, pda_account, code_account,
                                        self.ix.sign.slot, None, self.ix.sign.sign)
-        self.debug(f"{account_info}")
         self.state.add_account_to_db(account_info)
         return True
 
@@ -637,7 +634,6 @@ class ResizeStorageAccountIxDecoder(DummyIxDecoder):
 
         account_info = NeonAccountInfo(None, pda_account, code_account,
                                        self.ix.sign.slot, None, self.ix.sign.sign)
-        self.debug(f"{account_info}")
         self.state.add_account_to_db(account_info)
         return True
 
