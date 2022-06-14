@@ -51,3 +51,10 @@ LOG_FULL_OBJECT_INFO = os.environ.get("LOG_FULL_OBJECT_INFO", "NO") == "YES"
 PYTH_MAPPING_ACCOUNT = os.environ.get("PYTH_MAPPING_ACCOUNT", None)
 if PYTH_MAPPING_ACCOUNT is not None:
     PYTH_MAPPING_ACCOUNT = PublicKey(PYTH_MAPPING_ACCOUNT)
+# uses the "earliest" tag if "0x0" or "0" is passed to the "eth_getBlockByNumber" RPC
+USE_EARLIEST_BLOCK_IF_0_PASSED = os.environ.get("USE_EARLIEST_BLOCK_IF_0_PASSED", "NO") == "YES"
+# fetches a block from Solana net if it wasn't found in the DB
+FETCH_BLOCK_FROM_NET_IF_NOT_FOUND = os.environ.get("FETCH_BLOCK_FROM_NET_IF_NOT_FOUND", "YES") == "YES"
+# only track Solana blocks that have NEON transactions in them
+ONLY_TRACK_BLOCKS_WITH_NEON_TRANSACTION = os.environ.get("ONLY_TRACK_BLOCKS_WITH_NEON_TRANSACTION", "NO") == "YES"
+GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER = os.environ.get("GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER", "YES") == "YES"

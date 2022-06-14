@@ -24,7 +24,7 @@ from ..common_neon.types import NeonTxPrecheckResult, NeonEmulatingResult
 from ..common_neon.elf_params import ElfParams
 from ..common_neon.environment_utils import neon_cli
 from ..common_neon.environment_data import SOLANA_URL, PP_SOLANA_URL, EVM_STEP_COUNT, USE_EARLIEST_BLOCK_IF_0_PASSED, \
-                                           PYTH_MAPPING_ACCOUNT
+                                           PYTH_MAPPING_ACCOUNT, ONLY_TRACK_BLOCKS_WITH_NEON_TRANSACTION, GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER
 from ..memdb.memdb import MemDB
 from ..common_neon.gas_price_calculator import GasPriceCalculator
 from ..statistics_exporter.proxy_metrics_interface import StatisticsExporter

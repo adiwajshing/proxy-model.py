@@ -1,7 +1,7 @@
 from logged_groups import logged_group
 from typing import Optional
 
-from proxy.environment import FINALIZED, ONLY_TRACK_BLOCKS_WITH_NEON_TRANSACTION
+from ..common_neon.environment_data import FINALIZED, ONLY_TRACK_BLOCKS_WITH_NEON_TRANSACTION
 
 from ..indexer.indexer_db import IndexerDB
 

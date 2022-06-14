@@ -5,7 +5,7 @@ from typing import Optional, List
 
 from ..common_neon.utils import NeonTxInfo, NeonTxResultInfo, NeonTxFullInfo
 
-from ..environment import FETCH_BLOCK_FROM_NET_IF_NOT_FOUND, FINALIZED
+from ..common_neon.environment_data import FETCH_BLOCK_FROM_NET_IF_NOT_FOUND, FINALIZED
 from ..indexer.utils import SolanaIxSignInfo, CostInfo
 from ..indexer.accounts_db import NeonAccountDB, NeonAccountInfo
 from ..indexer.costs_db import CostsDB
