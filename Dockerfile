@@ -1,4 +1,4 @@
-ARG NEON_EVM_COMMIT
+ARG NEON_EVM_COMMIT=latest
 
 FROM neonlabsorg/evm_loader:${NEON_EVM_COMMIT} AS spl
 FROM neonlabsorg/evm_loader:ci-proxy-caller-program AS proxy_program
