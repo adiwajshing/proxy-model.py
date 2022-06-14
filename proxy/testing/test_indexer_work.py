@@ -11,7 +11,7 @@ import base64
 import unittest
 
 import rlp
-from eth_tx_utils import (make_instruction_data_from_tx,
+from .eth_tx_utils import (make_instruction_data_from_tx,
                           make_keccak_instruction_data)
 from eth_utils import big_endian_to_int
 from ethereum.transactions import Transaction as EthTrx
@@ -22,17 +22,17 @@ from solana.rpc.commitment import Confirmed
 from solana.rpc.types import TxOpts
 from solana.system_program import SYS_PROGRAM_ID
 from solana.transaction import AccountMeta, TransactionInstruction, Transaction
-from solana_utils import *
+from .solana_utils import *
 from solcx import compile_source
 from web3 import Web3
 from web3.auto.gethdev import w3
 
-from proxy.common_neon.constants import SYSVAR_INSTRUCTION_PUBKEY
-from proxy.environment import EVM_LOADER_ID
-from proxy.common_neon.address import EthereumAddress
-from proxy.common_neon.compute_budget import TransactionWithComputeBudget
-from proxy.common_neon.neon_instruction import NeonInstruction
-from proxy.common_neon.eth_proto import Trx
+from ..common_neon.constants import SYSVAR_INSTRUCTION_PUBKEY
+from ..common_neon.environment_data import EVM_LOADER_ID
+from ..common_neon.address import EthereumAddress
+from ..common_neon.compute_budget import TransactionWithComputeBudget
+from ..common_neon.neon_instruction import NeonInstruction
+from ..common_neon.eth_proto import Trx
 
 from .testing_helpers import request_airdrop
 

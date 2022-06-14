@@ -1,7 +1,7 @@
 import os
 
 from proxy.common_neon.constants import SYSVAR_INSTRUCTION_PUBKEY
-from proxy.environment import NEON_TOKEN_MINT
+from ..common_neon.elf_params import ElfParams
 
 os.environ['SOLANA_URL'] = "http://solana:8899"
 os.environ['EVM_LOADER'] = "53DfF883gyixYNXnM7s5xhdeyV8mVk9T4i2hGV9vG9io"
@@ -13,7 +13,7 @@ import datetime
 import multiprocessing
 import unittest
 import rlp
-from eth_tx_utils import make_instruction_data_from_tx, make_keccak_instruction_data
+from .eth_tx_utils import make_instruction_data_from_tx, make_keccak_instruction_data
 from eth_utils import big_endian_to_int
 from ethereum.transactions import Transaction as EthTrx
 from ethereum.utils import sha3
@@ -22,7 +22,7 @@ from solana.publickey import PublicKey
 from solana.rpc.commitment import Confirmed
 from solana.system_program import SYS_PROGRAM_ID
 from solana.transaction import AccountMeta, Transaction, TransactionInstruction
-from solana_utils import *
+from .solana_utils import *
 from spl.token.constants import TOKEN_PROGRAM_ID
 from spl.token.instructions import get_associated_token_address
 from web3 import Web3
@@ -125,7 +125,7 @@ class BlockedTest(unittest.TestCase):
         acc_info = ACCOUNT_INFO_LAYOUT.parse(data)
 
         code_address = PublicKey(acc_info.code_account)
-        alternate_token = get_associated_token_address(PublicKey(sol_address), NEON_TOKEN_MINT)
+        alternate_token = get_associated_token_address(PublicKey(sol_address), ElfParams().neon_token_mint)
 
         return (sol_address, alternate_token, code_address)
 

@@ -21,8 +21,10 @@ from ..common_neon.keys_storage import KeyStorage
 from ..common_neon.solana_interactor import SolanaInteractor
 from ..common_neon.utils import SolanaBlockInfo
 from ..common_neon.types import NeonTxPrecheckResult, NeonEmulatingResult
-from ..environment import GEN_FAKE_BLOCK_FOR_GET_BY_BLOCK_NUMBER, ONLY_TRACK_BLOCKS_WITH_NEON_TRANSACTION, SOLANA_URL, PP_SOLANA_URL, PYTH_MAPPING_ACCOUNT, NEON_EVM_VERSION, NEON_EVM_REVISION, \
-                          CHAIN_ID, USE_EARLIEST_BLOCK_IF_0_PASSED, neon_cli, EVM_STEP_COUNT
+from ..common_neon.elf_params import ElfParams
+from ..common_neon.environment_utils import neon_cli
+from ..common_neon.environment_data import SOLANA_URL, PP_SOLANA_URL, EVM_STEP_COUNT, USE_EARLIEST_BLOCK_IF_0_PASSED, \
+                                           PYTH_MAPPING_ACCOUNT
 from ..memdb.memdb import MemDB
 from ..common_neon.gas_price_calculator import GasPriceCalculator
 from ..statistics_exporter.proxy_metrics_interface import StatisticsExporter
@@ -77,11 +79,11 @@ class NeonRpcApiModel:
 
     @staticmethod
     def web3_clientVersion():
-        return 'Neon/v' + NEON_EVM_VERSION + '-' + NEON_EVM_REVISION
+        return 'Neon/v' + ElfParams().neon_evm_version + '-' + ElfParams().neon_evm_revision
 
     @staticmethod
     def eth_chainId():
-        return hex(int(CHAIN_ID))
+        return hex(ElfParams().chain_id)
 
     @staticmethod
     def neon_cli_version():
@@ -89,7 +91,7 @@ class NeonRpcApiModel:
 
     @staticmethod
     def net_version():
-        return str(CHAIN_ID)
+        return str(ElfParams().chain_id)
 
     def eth_gasPrice(self):
         gas_price = self.gas_price_calculator.get_suggested_gas_price()
@@ -637,7 +639,7 @@ class NeonRpcApiModel:
             tx['nonce'] = self.eth_getTransactionCount(sender, 'latest')
 
         if 'chainId' not in tx:
-            tx['chainId'] = hex(CHAIN_ID)
+            tx['chainId'] = hex(ElfParams().chain_id)
 
         try:
             signed_tx = w3.eth.account.sign_transaction(tx, account.private)
@@ -691,13 +693,13 @@ class NeonRpcApiModel:
             first_slot = self._db.get_starting_block_slot()
 
             self.debug(f'slots_behind: {slots_behind}, latest_slot: {latest_slot}, first_slot: {first_slot}')
-            if (slots_behind is None) or (latest_slot is None) or (first_slot is None):
+            if (slots_behind == 0) or (slots_behind is None) or (latest_slot is None) or (first_slot is None):
                 return False
 
             return {
-                'startingblock': first_slot,
-                'currentblock': latest_slot,
-                'highestblock': latest_slot + slots_behind
+                'startingBlock': first_slot,
+                'currentBlock': latest_slot,
+                'highestBlock': latest_slot + slots_behind
             }
         except (Exception,):
             return False
